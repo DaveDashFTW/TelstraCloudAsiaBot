@@ -27,7 +27,7 @@ bot.on('conversationUpdate', function (message) {
                 var card = createTelstraThumbCard(session);
                 bot.send(new builder.Message()
                     .address(message.address)
-                    .card(card));
+                    .addAttachment({ card }));
 					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
                     .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description"));
                      */
