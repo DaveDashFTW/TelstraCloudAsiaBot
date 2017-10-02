@@ -31,14 +31,26 @@ bot.on('conversationUpdate', function (message) {
                         new builder.HeroCard(session)
                         .title('Telstra Global')
                         .subtitle('')
-                        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description")
+                        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
                         .images([
                             builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
                         ])
                         .buttons([
                             builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
                         ])
-                     ]));
+                     ])
+                     .suggestedActions(
+                        builder.SuggestedActions.create(
+                                session, [
+                                    builder.CardAction.imBack(session, "productId=1", "Programmable Network"),
+                                    builder.CardAction.imBack(session, "productId=2", "Connectivity"),
+                                    builder.CardAction.imBack(session, "productId=3", "Managed Networks"),
+                                    builder.CardAction.imBack(session, "productId=4", "Cloud"),
+                                    builder.CardAction.imBack(session, "productId=5", "Collaboration"),
+                                    builder.CardAction.imBack(session, "productId=6", "Consulting and Services")
+                                ]
+                            ))
+                        );
 
 
 					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
@@ -50,8 +62,9 @@ bot.on('conversationUpdate', function (message) {
 });
 
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-                knowledgeBaseId: process.env.QnAKnowledgebaseId, 
-    subscriptionKey: process.env.QnASubscriptionKey});
+    knowledgeBaseId: 'd64d542d-50ed-4705-91c4-d7d669a19235', 
+	subscriptionKey: 'fbb1f7214c464e3f8bbb7bb65713b937',
+	top: 3});
     
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
 bot.library(qnaMakerTools.createLibrary());
@@ -62,7 +75,8 @@ bot.library(qnaMakerTools.createLibrary());
 var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
     recognizers: [recognizer],
                 defaultMessage: 'No match! Try changing the query terms!',
-                qnaThreshold: 0.3}
+                qnaThreshold: 0.7,
+                feedbackLib: qnaMakerTools}
 );
 
 
