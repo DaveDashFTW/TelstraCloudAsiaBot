@@ -24,10 +24,23 @@ bot.on('conversationUpdate', function (message) {
             if (identity.id === message.address.bot.id) {
            
                 var session = bot.loadSession(message.address, function(err,session) {} );
-                var card = createTelstraThumbCard(session);
+
                 bot.send(new builder.Message()
                     .address(message.address)
-                    .addAttachment({ card }));
+                    .addAttachment([ 
+                        new builder.ThumbnailCard(session)
+                        .title('Telstra Global')
+                        .subtitle('')
+                        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description")
+                        .images([
+                            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+                        ])
+                        .buttons([
+                            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View More')
+                        ])
+                     ]));
+
+
 					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
                     .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description"));
                      */
@@ -64,20 +77,4 @@ if (useEmulator) {
     server.post('/api/messages', connector.listen());    
 } else {
     module.exports = { default: connector.listen() }
-}
-
-//
-//Helper Functions
-//
-
-function createTelstraThumbCard(session) {
-    return new builder.ThumbnailCard(session)
-        .title('Telstra Global')
-        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description")
-        .images([
-            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
-        ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View More')
-        ]);
 }
