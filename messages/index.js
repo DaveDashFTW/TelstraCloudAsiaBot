@@ -42,12 +42,12 @@ bot.on('conversationUpdate', function (message) {
                      .suggestedActions(
                         builder.SuggestedActions.create(
                                 session, [
-                                    builder.CardAction.imBack(session, "productId=1", "Programmable Network"),
-                                    builder.CardAction.imBack(session, "productId=2", "Connectivity"),
-                                    builder.CardAction.imBack(session, "productId=3", "Managed Networks"),
-                                    builder.CardAction.imBack(session, "productId=4", "Cloud"),
-                                    builder.CardAction.imBack(session, "productId=5", "Collaboration"),
-                                    builder.CardAction.imBack(session, "productId=6", "Consulting and Services")
+                                    builder.CardAction.postBack(session, "productId=1", "Programmable Network"),
+                                    builder.CardAction.postBack(session, "productId=2", "Connectivity"),
+                                    builder.CardAction.postBack(session, "productId=3", "Managed Networks"),
+                                    builder.CardAction.postBack(session, "productId=4", "Cloud"),
+                                    builder.CardAction.postBack(session, "productId=5", "Collaboration"),
+                                    builder.CardAction.postBack(session, "productId=6", "Consulting and Services")
                                 ]
                             ))
                         );
@@ -64,7 +64,7 @@ bot.on('conversationUpdate', function (message) {
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
     knowledgeBaseId: 'd64d542d-50ed-4705-91c4-d7d669a19235', 
 	subscriptionKey: 'fbb1f7214c464e3f8bbb7bb65713b937',
-	top: 3});
+	top: 4});
     
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
 bot.library(qnaMakerTools.createLibrary());
@@ -75,12 +75,85 @@ bot.library(qnaMakerTools.createLibrary());
 var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
     recognizers: [recognizer],
                 defaultMessage: 'No match! Try changing the query terms!',
-                qnaThreshold: 0.7,
+                qnaThreshold: 0.1,
                 feedbackLib: qnaMakerTools}
 );
 
+basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
+    
+        var result = qnaMakerResult;
+
+        var checkCard = "productCard";
+        if(result.answers[0].answer.indexOf(checkCard) !== -1)
+        {
+            var responseCardArray = buildProductCards(session, result.answers[0].answer);
+            var response = new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(responseCardArray);
+        }
+        else {
+            var response = new builder.Message().text(result.answers[0].answer);
+        }
+
+        response = response.suggestedActions(returnDefaultSuggestedActions(session));
+
+        session.send(response);
+    
+};
+
 
 bot.dialog('/', basicQnAMakerDialog);
+
+
+/////////////////////////////////////
+//HELPER FUNCTIONS
+/////////////////////////////////////
+function returnDefaultSuggestedActions(session) {
+    return new builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.postBack(session, "productId=1", "Programmable Network"),
+            builder.CardAction.postBack(session, "productId=2", "Connectivity"),
+            builder.CardAction.postBack(session, "productId=3", "Managed Networks"),
+            builder.CardAction.postBack(session, "productId=4", "Cloud"),
+            builder.CardAction.postBack(session, "productId=5", "Collaboration"),
+            builder.CardAction.postBack(session, "productId=6", "Consulting and Services")
+        ]
+    );
+}
+
+function buildProductCards(session, text) {
+    var cardData = text.split(";");
+
+return [
+    new builder.HeroCard(session)
+        .title(cardData[1])
+        .subtitle('')
+        .text(cardData[2])
+        .images([
+            builder.CardImage.create(session, 'https://www.telstraglobal.com/images/assets/programmable/our-vision-image2.png')
+        ])    
+        .buttons([
+            builder.CardAction.openUrl(session, cardData[7], "Learn More")
+        ]),
+
+    new builder.HeroCard(session)
+    .title(cardData[3])
+    .subtitle('')
+    .text(cardData[4])    .buttons([
+        builder.CardAction.openUrl(session, cardData[7], "Learn More")
+    ]),
+
+    new builder.HeroCard(session)
+    .title(cardData[5])
+    .subtitle('')
+    .text(cardData[6])
+    .buttons([
+        builder.CardAction.openUrl(session, cardData[7], "Learn More")
+    ])
+    ]
+}
+
+/////////////////////////////////////
+//FOR DEBUGGING
+/////////////////////////////////////
 
 if (useEmulator) {
     var restify = require('restify');
