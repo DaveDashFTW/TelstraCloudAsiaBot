@@ -27,8 +27,8 @@ bot.on('conversationUpdate', function (message) {
 
                 bot.send(new builder.Message()
                     .address(message.address)
-                    .addAttachment([ 
-                        new builder.ThumbnailCard(session)
+                    .attachments([ 
+                        new builder.HeroCard(session)
                         .title('Telstra Global')
                         .subtitle('')
                         .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description")
@@ -36,7 +36,7 @@ bot.on('conversationUpdate', function (message) {
                             builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
                         ])
                         .buttons([
-                            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View More')
+                            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
                         ])
                      ]));
 
