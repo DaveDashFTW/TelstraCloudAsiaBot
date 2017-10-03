@@ -29,7 +29,7 @@ bot.on('conversationUpdate', function (message) {
                 bot.send(new builder.Message()
                     .address(message.address)
                     .attachments([ 
-                        new builder.HeroCard(session)
+                        new builder.ThumbnailCard(session)
                         .title('Telstra Global')
                         .subtitle('')
                         .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
