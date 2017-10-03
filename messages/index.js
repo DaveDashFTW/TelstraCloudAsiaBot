@@ -5,6 +5,7 @@ var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 var path = require('path');
+var fs = require("fs");
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -38,19 +39,13 @@ bot.on('conversationUpdate', function (message) {
                         .buttons([
                             builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
                         ])
-                     ])
-                     .suggestedActions(
-                        builder.SuggestedActions.create(
-                                session, [
-                                    builder.CardAction.postBack(session, "productId=1", "Programmable Network"),
-                                    builder.CardAction.postBack(session, "productId=2", "Connectivity"),
-                                    builder.CardAction.postBack(session, "productId=3", "Managed Networks"),
-                                    builder.CardAction.postBack(session, "productId=4", "Cloud"),
-                                    builder.CardAction.postBack(session, "productId=5", "Collaboration"),
-                                    builder.CardAction.postBack(session, "productId=6", "Consulting and Services")
-                                ]
-                            ))
-                        );
+                     ]));
+
+                    bot.send(new builder.Message()
+                        .address(message.address)
+                        .attachmentLayout(builder.AttachmentLayout.carousel)
+                        .attachments(buildHeroCards(session)) 
+                    )
 
 
 					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
@@ -117,6 +112,49 @@ function returnDefaultSuggestedActions(session) {
             builder.CardAction.postBack(session, "productId=6", "Consulting and Services")
         ]
     );
+}
+
+function buildHeroCards(session) {
+    return [
+        new builder.ThumbnailCard(session)
+            .title("Liberate your workforce")
+            .text("Time or location shouldn’t stop your staff from living the life they want whilst achieving great things for your business. Agility and flexibility are imperative for a productive workforce of the future. And, it is connection that fosters collaboration. \n\r By removing the barriers that inhibit real-time, secure communication we can help to liberate your team. This means your staff can be out there, wherever and whenever, working in the moment. Capitalising on opportunities and getting the balance they need.")
+            .images([
+                builder.CardImage.create(session, "data:image/png;base64,"+ new Buffer(fs.readFileSync("./icons/accessibility.png").toString("base64")))
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Cloud Collaboration" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "SIP Connect" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Global VoIP" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Collaboraton Consulting" ),
+        ]),
+        new builder.ThumbnailCard(session)
+            .title("Reach Global Markets")
+            .text("Our network and solutions help you to seamlessly grow your business into new markets. Ensuring you can reliably connect with a new customer when and where you need to. Or securely share information with a supplier to protect your IP. \n\r Cost-efficient, flexible solutions means you have the agility to scale when the time strikes, whenever that might be. The most important thing, is making sure you are ready when it does and that’s what we’re here to help with.")
+            .images([
+                builder.CardImage.create(session, "data:image/png;base64,"+ new Buffer(fs.readFileSync("./icons/growth.png").toString("base64")))
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Virtual Private Networks" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Colocation" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Ethernet VPN" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "IP Transit" ),
+                builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Network Consulting" ),
+        ]),
+        new builder.ThumbnailCard(session)
+        .title("Optimise Your IT")
+        .text("New technologies are being created every second of every day. It’s not just about adding new layers of technology. We work with you to maximise the efficiency of your systems so you can move as fast as you need, adapt to change whenever it is called for, and drive solutions for your customers at the core of your own businesses. \n\r We work with you to develop solutions that will refine and integrate new technologies into your business. Promoting flexibility to scale, grow and innovate when you need.")
+        .images([
+            builder.CardImage.create(session, "data:image/png;base64,"+ new Buffer(fs.readFileSync("./icons/optimise.png").toString("base64")))
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Cloud Infrastructure" ),
+            builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Public Cloud" ),
+            builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Managed SD-WAN" ),
+            builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "vBlock System" ),
+            builder.CardAction.openUrl(session, "https://www.telstraglobal.com/#", "Cloud Consulting" ),
+    ])
+    ]   
 }
 
 function buildProductCards(session, text) {
