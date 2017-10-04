@@ -16,7 +16,28 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
 
-var bot = new builder.UniversalBot(connector);
+var bot = new builder.UniversalBot(connector, function (session) {
+    session.send(        new builder.Message()
+    .attachments([ 
+        new builder.ThumbnailCard(session)
+        .title('Telstra Global')
+        .subtitle('')
+        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
+        .images([
+            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
+        ])
+     ]));
+
+     session.send(  new builder.Message()
+     .attachmentLayout(builder.AttachmentLayout.carousel)
+     .attachments(buildHeroCards(session)))
+});
+
+
+
 bot.localePath(path.join(__dirname, './locale'));
 
 bot.on('conversationUpdate', function (message) {
@@ -24,8 +45,7 @@ bot.on('conversationUpdate', function (message) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
 
-                session = bot.loadSession(message.address, function(err, session) {});
-                bot.send(greetingMessage(session, message));
+            bot.beginDialog(message.address, '/');
 
                      /*
 
@@ -89,16 +109,15 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
 };
 
 
-bot.dialog('/', basicQnAMakerDialog);
+//bot.dialog('/', basicQnAMakerDialog);
 
 
 /////////////////////////////////////
 //HELPER FUNCTIONS
 /////////////////////////////////////
-function greetingMessage(session, message) {
+function greetingMessage(session) {
     return [
         new builder.Message()
-        .address(message.address)
         .attachments([ 
             new builder.ThumbnailCard(session)
             .title('Telstra Global')
@@ -112,9 +131,9 @@ function greetingMessage(session, message) {
             ])
          ]),
          new builder.Message()
-         .address(message.address)
          .attachmentLayout(builder.AttachmentLayout.carousel)
-         .attachments(buildHeroCards(session)) 
+         .attachments(buildHeroCards(session)),
+          
         ]
 }
 
@@ -205,6 +224,20 @@ return [
     ])
     ]
 }
+
+// Other wrapper functions
+function beginDialog(address, dialogId, dialogArgs) {
+    bot.beginDialog(address, dialogId, dialogArgs);
+}
+
+function sendMessage(message) {
+    bot.send(message);
+}
+
+module.exports = {
+    beginDialog: beginDialog,
+    sendMessage: sendMessage
+};
 
 /////////////////////////////////////
 //FOR DEBUGGING
