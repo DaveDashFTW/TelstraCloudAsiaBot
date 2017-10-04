@@ -1,1 +1,18 @@
-<iframe style="min-width:300px; min-height:800px" src='https://webchat.botframework.com/embed/telstracloudasiabot?s=xqJIpZAS8nI.cwA.A94.-efoblqVQGNxJWws-eCUeMUag9_vYOfBElK5u0xmqSA'></iframe>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdn.botframework.com/botframework-webchat/latest/botchat.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="bot"/>
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/botchat.js"></script>
+    <script>
+      BotChat.App({
+        directLine: { secret: "_iiLToyWYLk.cwA.W8U.0wGoGddTMfHe0i8bVbF-GGSuMqIBT6fpaZ9zcvqQp4w" },
+        user: { id: 'userid' },
+        bot: { id: 'botid' },
+        resize: 'detect'
+      }, document.getElementById("bot"));
+    </script>
+  </body>
+</html>
