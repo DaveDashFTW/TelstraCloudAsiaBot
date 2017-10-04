@@ -17,7 +17,8 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 });
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send(        new builder.Message()
+
+session.send(new builder.Message()
     .attachments([ 
         new builder.ThumbnailCard(session)
         .title('Telstra Global')
@@ -33,10 +34,10 @@ var bot = new builder.UniversalBot(connector, function (session) {
 
      session.send(  new builder.Message()
      .attachmentLayout(builder.AttachmentLayout.carousel)
-     .attachments(buildHeroCards(session)))
+     .attachments(buildHeroCards(session)));
+     
+     
 });
-
-
 
 bot.localePath(path.join(__dirname, './locale'));
 
