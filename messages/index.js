@@ -23,29 +23,23 @@ bot.on('conversationUpdate', function (message) {
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
-           
-                var session = bot.loadSession(message.address, function(err,session) {} );
 
-                bot.send(new builder.Message()
-                    .address(message.address)
-                    .attachments([ 
-                        new builder.ThumbnailCard(session)
-                        .title('Telstra Global')
-                        .subtitle('')
-                        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
-                        .images([
-                            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
-                        ])
-                        .buttons([
-                            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
-                        ])
-                     ]));
+                session = bot.loadSession(message.address, function(err, session) {});
+                bot.send(greetingMessage(session, message));
+
+                     /*
+
+                    var savedAddress = session.message.address; 
+                    // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
+                    session.userData.savedAddress = savedAddress;
 
                     bot.send(new builder.Message()
-                        .address(message.address)
+                        .address(savedAddress)
                         .attachmentLayout(builder.AttachmentLayout.carousel)
                         .attachments(buildHeroCards(session)) 
-                    )
+                    )*/
+
+                    
 
 
 					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
@@ -101,6 +95,29 @@ bot.dialog('/', basicQnAMakerDialog);
 /////////////////////////////////////
 //HELPER FUNCTIONS
 /////////////////////////////////////
+function greetingMessage(session, message) {
+    return [
+        new builder.Message()
+        .address(message.address)
+        .attachments([ 
+            new builder.ThumbnailCard(session)
+            .title('Telstra Global')
+            .subtitle('')
+            .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
+            .images([
+                builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
+            ])
+         ]),
+         new builder.Message()
+         .address(message.address)
+         .attachmentLayout(builder.AttachmentLayout.carousel)
+         .attachments(buildHeroCards(session)) 
+        ]
+}
+
 function returnDefaultSuggestedActions(session) {
     return new builder.SuggestedActions.create(
         session, [
