@@ -32,15 +32,14 @@ bot.on('conversationUpdate', function (message) {
 
 bot.on('routing', function(session) {
     if (session.message.text === "Business Solutions") {
-        session.send("DEBUG: Intercepted Business Solutions message");
         session.message.text = "";
         session.send(new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session)).suggestedActions(returnDefaultSuggestedActions(session)));
     }
 });
 
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: 'd64d542d-50ed-4705-91c4-d7d669a19235', 
-	subscriptionKey: 'fbb1f7214c464e3f8bbb7bb65713b937',
+    knowledgeBaseId: 'a7c295be-c908-48ab-8d63-d5b76933e1f7', 
+	subscriptionKey: '190c5f8b1ff9492683f72f7fd02a3f0a',
 	top: 4});
     
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
@@ -57,23 +56,19 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 );
 
 basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
-    
-        var result = qnaMakerResult;
-        session.send("DEBUG: " + result.answers[0].answer);
-        if(result.answers[0].answer === "Business Solutions")
+
+        var response;
+        if (qnaMakerResult.answers[0].answer == "Business Solutions")
         {
-            var response = new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session)); 
+            response = new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session));
         }
-        else {
-            var response = new builder.Message().text(result.answers[0].answer);
+        else
+        {
+            response = new builder.Message().text(qnaMakerResult.answers[0].answer);
         }
-
         response = response.suggestedActions(returnDefaultSuggestedActions(session));
-
-        session.send(response);
-    
+        session.send(response);    
 };
-
 
 bot.dialog('/', basicQnAMakerDialog);
 bot.dialog('greetingDialog',  [ 
@@ -98,7 +93,7 @@ bot.dialog('greetingDialog',  [
     },
     function (session, results) {
         session.userData.name = results.response;
-        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me', { listStyle: 3} );
+        builder.Prompts.choice(session, 'Hello ' + session.userData.name + '! What would you like to know about?', 'Business Solutions|Contact Us|Help|Restart Me', { listStyle: 3} );
         session.endDialog();   
     }
 ]);
