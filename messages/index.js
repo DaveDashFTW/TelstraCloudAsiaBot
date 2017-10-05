@@ -77,26 +77,28 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
 
 bot.dialog('/', basicQnAMakerDialog);
 bot.dialog('greetingDialog',  [ 
-    function(session) {
+    function(session, args, next) {
     session.send(new builder.Message()
-    .attachments([ 
-        new builder.ThumbnailCard(session)
-        .title('Telstra Global')
-        .subtitle('')
-        .text("Hello!  I'm a Telstra Bot. To get started please tell me your name, and we'll go from there!")
-        .images([
-            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
-        ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
-        ])
-    ]));
-
-    builder.Prompts.text(session, "What is your name?");
+        .attachments([ 
+            new builder.HeroCard(session)
+            .title('Telstra Global')
+            .subtitle('Hello!')
+            .text("I'm a Telstra Bot. To get started please tell me your name, and we'll go from there! At any time if you want to ask me a question about Telstra products and services, then feel free to just type your question in the chat window.")
+            .images([
+                builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+            ])
+            .buttons([
+                builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
+            ])
+        ]));
+        next();
+    },
+    function(session, args) {
+        builder.Prompts.text(session, "What is your name?");
     },
     function (session, results) {
         session.userData.name = results.response;
-        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me' );
+        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me', { listStyle: 3} );
         session.endDialog();   
     }
 ]);
