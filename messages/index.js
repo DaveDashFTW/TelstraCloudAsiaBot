@@ -96,7 +96,7 @@ bot.dialog('greetingDialog',  [
     },
     function (session, results) {
         session.userData.name = results.response;
-        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me', { listStyle: 3} );
+        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me' );
         session.endDialog();   
     }
 ]);
