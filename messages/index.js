@@ -16,58 +16,25 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
 
-var bot = new builder.UniversalBot(connector, function (session) {
-
-session.send(new builder.Message()
-    .attachments([ 
-        new builder.ThumbnailCard(session)
-        .title('Telstra Global')
-        .subtitle('')
-        .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
-        .images([
-            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
-        ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
-        ])
-     ]));
-
-     session.send(  new builder.Message()
-     .attachmentLayout(builder.AttachmentLayout.carousel)
-     .attachments(buildHeroCards(session)));
-     
-     
-});
+var bot = new builder.UniversalBot(connector);
 
 bot.localePath(path.join(__dirname, './locale'));
 
 bot.on('conversationUpdate', function (message) {
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
-            if (identity.id === message.address.bot.id) {
-
-            bot.beginDialog(message.address, '/');
-
-                     /*
-
-                    var savedAddress = session.message.address; 
-                    // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
-                    session.userData.savedAddress = savedAddress;
-
-                    bot.send(new builder.Message()
-                        .address(savedAddress)
-                        .attachmentLayout(builder.AttachmentLayout.carousel)
-                        .attachments(buildHeroCards(session)) 
-                    )*/
-
-                    
-
-
-					/*.addAttachment({ name: "Telstra Logo", contentType: 'ímage/png', contentUrl: "http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png"})
-                    .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services - for example - ask me for a service description"));
-                     */
-                }
+            if (identity.id === message.address.bot.id) {            
+                bot.beginDialog(message.address, 'greetingDialog');                
+            }
         });
+    }
+});
+
+bot.on('routing', function(session) {
+    if (session.message.text === "Business Solutions") {
+        session.send("DEBUG: Intercepted Business Solutions message");
+        session.message.text = "";
+        session.send(new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session)).suggestedActions(returnDefaultSuggestedActions(session)));
     }
 });
 
@@ -92,12 +59,10 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
     
         var result = qnaMakerResult;
-
-        var checkCard = "productCard";
-        if(result.answers[0].answer.indexOf(checkCard) !== -1)
+        session.send("DEBUG: " + result.answers[0].answer);
+        if(result.answers[0].answer === "Business Solutions")
         {
-            var responseCardArray = buildProductCards(session, result.answers[0].answer);
-            var response = new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(responseCardArray);
+            var response = new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session)); 
         }
         else {
             var response = new builder.Message().text(result.answers[0].answer);
@@ -110,7 +75,31 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
 };
 
 
-//bot.dialog('/', basicQnAMakerDialog);
+bot.dialog('/', basicQnAMakerDialog);
+bot.dialog('greetingDialog',  [ 
+    function(session) {
+    session.send(new builder.Message()
+    .attachments([ 
+        new builder.ThumbnailCard(session)
+        .title('Telstra Global')
+        .subtitle('')
+        .text("Hello!  I'm a Telstra Bot. To get started please tell me your name, and we'll go from there!")
+        .images([
+            builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
+        ])
+    ]));
+
+    builder.Prompts.text(session, "What is your name?");
+    },
+    function (session, results) {
+        session.userData.name = results.response;
+        builder.Prompts.choice(session, 'Hello ${results.response}! What would you like to know about?', 'Business Solutions|Contact|Help|Restart Me', { listStyle: 3} );
+        session.endDialog();   
+    }
+]);
 
 
 /////////////////////////////////////
@@ -141,12 +130,10 @@ function greetingMessage(session) {
 function returnDefaultSuggestedActions(session) {
     return new builder.SuggestedActions.create(
         session, [
-            builder.CardAction.postBack(session, "productId=1", "Programmable Network"),
-            builder.CardAction.postBack(session, "productId=2", "Connectivity"),
-            builder.CardAction.postBack(session, "productId=3", "Managed Networks"),
-            builder.CardAction.postBack(session, "productId=4", "Cloud"),
-            builder.CardAction.postBack(session, "productId=5", "Collaboration"),
-            builder.CardAction.postBack(session, "productId=6", "Consulting and Services")
+            builder.CardAction.postBack(session, "Business Solutions", "Business Solutions"),
+            builder.CardAction.postBack(session, "Contact Us", "Contacts Us"),
+            builder.CardAction.postBack(session, "Help", "Help"),
+            builder.CardAction.postBack(session, "Restart Me", "Restart Me"),
         ]
     );
 }
