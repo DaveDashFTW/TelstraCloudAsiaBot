@@ -37,11 +37,14 @@ bot.on('routing', function(session) {
     }
 });
 
-var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+var qnarecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
     knowledgeBaseId: 'a7c295be-c908-48ab-8d63-d5b76933e1f7', 
 	subscriptionKey: '190c5f8b1ff9492683f72f7fd02a3f0a',
-	top: 4});
-    
+    top: 4});
+
+var model = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/6a2d8b67-28b1-4c62-82bd-e6ab5b078547?subscription-key=98129676b39a4940a11161b95143c86f&staging=true&verbose=true&timezoneOffset=480&q=";
+var recognizer = new builder.LuisRecognizer(model);
+
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
 bot.library(qnaMakerTools.createLibrary());
 
@@ -70,7 +73,45 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
         session.send(response);    
 };
 
-bot.dialog('/', basicQnAMakerDialog);
+var intents = new builder.IntentDialog({ recognizers: [recognizer, qnarecognizer] });
+bot.dialog('/', intents);
+
+intents.matches('FindContact', function(session, args) {
+    var intent = args.intent;
+    var entities = args.entities;
+
+    if (!entities)
+    {
+        session.send("Hmmmm I couldn't find a geography, please try again?");
+        return null;
+    }
+
+    var place = builder.EntityRecognizer.findEntity(entities, 'Geography');
+    if (place === null)
+    {
+        place = builder.EntityRecognizer.findEntity(entities, 'builtin.geography.country');
+    }
+
+    session.send('To contact our ' + place.entity + " office, please visit the following link: " +  'https://www.telstraglobal.com/contacts/asia/' + place.entity);
+    session.send(suggestionActionHelper(session,null));
+
+});
+
+intents.matches('qna', [
+    function (session, args, next) {
+        var answerEntity = builder.EntityRecognizer.findEntity(args.entities, 'answer');
+
+        session.send(suggestionActionHelper(session, answerEntity));
+    }
+]);
+
+intents.onDefault([
+    function(session){
+        session.send('Sorry!! No match!!');
+	}
+]);
+
+//bot.dialog('/', basicQnAMakerDialog);
 bot.dialog('greetingDialog',  [ 
     function(session, args, next) {
     session.send(new builder.Message()
@@ -102,6 +143,29 @@ bot.dialog('greetingDialog',  [
 /////////////////////////////////////
 //HELPER FUNCTIONS
 /////////////////////////////////////
+function suggestionActionHelper(session, answerEntity) {
+
+    var response = new builder.Message();
+    if (answerEntity)
+    {
+        if (answerEntity.entity == "Business Solutions")
+        {
+            response = response.attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session));
+        }
+        else
+        {
+
+            response = response.text(answerEntity.entity);
+            
+        }
+    }
+
+    response = response.suggestedActions(returnDefaultSuggestedActions(session));
+    return response;  
+}
+
+
+
 function greetingMessage(session) {
     return [
         new builder.Message()
