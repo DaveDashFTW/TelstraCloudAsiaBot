@@ -149,7 +149,7 @@ bot.dialog('greetingDialog',  [
         next();
     },
     function(session, args) {
-        builder.Prompts.text(session, "What is your name?");
+        session.beginDialog(askName);
     },
     function (session, results) {
         session.userData.name = results.response;
@@ -157,7 +157,14 @@ bot.dialog('greetingDialog',  [
         session.endDialog();   
     }
 ]);
-
+bot.dialog('askName', [
+    function(session) {
+        builder.Prompts.text(session, "What is your name?");
+    },
+    function (session, results) {
+        session.endDialogWithResult(results);
+    }
+]);
 
 /////////////////////////////////////
 //HELPER FUNCTIONS
