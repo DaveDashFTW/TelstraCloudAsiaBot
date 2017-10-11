@@ -42,7 +42,7 @@ var qnarecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 	subscriptionKey: '190c5f8b1ff9492683f72f7fd02a3f0a',
     top: 4});
 
-var model = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/6a2d8b67-28b1-4c62-82bd-e6ab5b078547?subscription-key=98129676b39a4940a11161b95143c86f&staging=true&verbose=true&timezoneOffset=480&q=";
+var model = "https://southeastasia.api.cognitive.microsoft.com/luis/v2.0/apps/6a2d8b67-28b1-4c62-82bd-e6ab5b078547?subscription-key=c532e2e66416448c84fb05d614abed2c&staging=true&verbose=true&timezoneOffset=480&q=";
 var recognizer = new builder.LuisRecognizer(model);
 
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
@@ -97,6 +97,25 @@ intents.matches('FindContact', function(session, args) {
 
 });
 
+intents.matches('ContactMe', function(session, args) {
+    var intent = args.intent;
+    var entities = args.entities;
+
+    if (!entities)
+    {
+        session.send("Hmmmm I couldn't find any contact details, please try again?");
+        return null;
+    }
+
+    var contactDetails = builder.EntityRecognizer.findEntity(entities, 'builtin.phonenumber');
+    if (contactDetails === null)
+    {
+        contactDetails = builder.EntityRecognizer.findEntity(entities, 'builtin.email' );
+    }
+    session.send('OK ' + session.userData.name + ', we will contact you when one of our sales staff is next available on the following channel: ' + contactDetails.entity);
+    session.send(suggestionActionHelper(session,null));
+});
+
 intents.matches('qna', [
     function (session, args, next) {
         var answerEntity = builder.EntityRecognizer.findEntity(args.entities, 'answer');
@@ -107,7 +126,7 @@ intents.matches('qna', [
 
 intents.onDefault([
     function(session){
-        session.send('Sorry!! No match!!');
+        session.send('Sorry!! No match!! Please type help for some guidance on what to type...');
 	}
 ]);
 
@@ -173,7 +192,7 @@ function greetingMessage(session) {
             new builder.ThumbnailCard(session)
             .title('Telstra Global')
             .subtitle('')
-            .text("Hello!  I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
+            .text("Hello! I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
             .images([
                 builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
             ])
