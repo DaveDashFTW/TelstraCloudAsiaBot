@@ -154,8 +154,10 @@ bot.dialog('greetingDialog',  [
     function (session, results) {
         session.userData.name = results.response;
         builder.Prompts.choice(session, 'Hello ' + session.userData.name + '! What would you like to know about?', 'Business Solutions|Contact Us|Help|Restart Me', { listStyle: 3} );
-        //session.endConversation
-        //session.endDialog();   
+        session.endConversation();  
+    },
+    function(session, results) {
+        session.endDialog();
     }
 ]);
 bot.dialog('askName', [
