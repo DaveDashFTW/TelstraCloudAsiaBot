@@ -149,7 +149,7 @@ bot.dialog('greetingDialog',  [
         next();
     },
     function(session, args) {
-        session.beginDialog(askName);
+        session.beginDialog('askName');
     },
     function (session, results) {
         session.userData.name = results.response;
