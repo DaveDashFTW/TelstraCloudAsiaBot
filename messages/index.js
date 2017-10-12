@@ -140,7 +140,7 @@ bot.dialog('greetingDialog',  [
             .subtitle('Hello!')
             .text("I'm a Telstra Bot. To get started please tell me your name, and we'll go from there! At any time if you want to ask me a question about Telstra products and services, then feel free to just type your question in the chat window.")
             .images([
-                builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+                builder.CardImage.create(session, 'https://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
