@@ -30,11 +30,11 @@ bot.on('conversationUpdate', function (message) {
     }
 });
 
-/*bot.on('routing', function(session) {
+bot.on('routing', function(session) {
     if (session.message.text === "Business Solutions") {
         session.send(new builder.Message().attachmentLayout(builder.AttachmentLayout.carousel).attachments(buildHeroCards(session)).suggestedActions(returnDefaultSuggestedActions(session)));
     }
-});*/
+});
 
 var qnarecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
     knowledgeBaseId: 'a7c295be-c908-48ab-8d63-d5b76933e1f7', 
@@ -57,7 +57,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
                 feedbackLib: qnaMakerTools}
 );
 
-/*
+
 basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
 
         var response;
@@ -71,7 +71,7 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
         }
         response = response.suggestedActions(returnDefaultSuggestedActions(session));
         session.send(response);    
-};*/
+};
 
 var intents = new builder.IntentDialog({ recognizers: [recognizer, qnarecognizer] });
 bot.dialog('/', intents);
