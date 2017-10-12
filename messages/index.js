@@ -135,7 +135,7 @@ bot.dialog('greetingDialog',  [
     function(session, args, next) {
     session.send(new builder.Message()
         .attachments([ 
-            new builder.HeroCard(session)
+            new builder.ThumbnailCard(session)
             .title('Telstra Global')
             .subtitle('Hello!')
             .text("I'm a Telstra Bot. To get started please tell me your name, and we'll go from there! At any time if you want to ask me a question about Telstra products and services, then feel free to just type your question in the chat window.")
