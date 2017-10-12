@@ -57,6 +57,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
                 feedbackLib: qnaMakerTools}
 );
 
+/*
 basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
 
         var response;
@@ -70,7 +71,7 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
         }
         response = response.suggestedActions(returnDefaultSuggestedActions(session));
         session.send(response);    
-};
+};*/
 
 var intents = new builder.IntentDialog({ recognizers: [recognizer, qnarecognizer] });
 bot.dialog('/', intents);
