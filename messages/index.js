@@ -112,7 +112,7 @@ intents.matches('ContactMe', function(session, args) {
     {
         contactDetails = builder.EntityRecognizer.findEntity(entities, 'builtin.email' );
     }
-    session.send('OK ' + session.userData.name + ', we will contact you when one of our sales staff is next available on the following channel: ' + contactDetails.entity);
+    session.send('OK, we will contact you when one of our sales staff is next available on the following channel: ' + contactDetails.entity);
     session.send(suggestionActionHelper(session,null));
 });
 
@@ -203,7 +203,7 @@ function greetingMessage(session) {
             .subtitle('')
             .text("Hello! I'm a Telstra Bot. To get started ask me some questions about Telstra Products and Services or click on some of the suggested actions below!")
             .images([
-                builder.CardImage.create(session, 'http://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
+                builder.CardImage.create(session, 'https://cdn.downdetector.com/static/uploads/c/300/6e880/Telstra_logo.svg_1_1.png')
             ])
             .buttons([
                 builder.CardAction.openUrl(session, 'http://www.telstraglobal.com', 'View Website')
