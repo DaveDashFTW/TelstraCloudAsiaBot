@@ -158,8 +158,6 @@ bot.dialog('greetingDialog',  [
         builder.Prompts.choice(session, 'What would you like to know about?', 'Business Solutions|Contact Us|Help|Restart Me', { listStyle: 3} );
         
         session.endConversation();  
-    },
-    function(session, results) {
         session.endDialog();
     }
 ]);
